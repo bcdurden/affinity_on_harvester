@@ -144,9 +144,9 @@ After my Harvester cluster has come up, I'll create a VM with the VM image:
 
 Recall that above we have reserved 2 CPU cores for dedicated usage. So I'll build a VM with 2 CPU and 4GB of memory, I bumped the disk image to 20GB. I am using my untagged VM Network to keep it simple. I also ensured the guest agent was enabled since Ubuntu does not come with `qemu-guest-agent` by default and enabled secure boot and UEFI. Go ahead and create the VM by clicking the `Create` button. Wait a few seconds for the VM object to stabilize and then stop the VM. Wait until it is in an 'Off' position.
 
-Harvester is awesome in that much of the complexity of Kubevirt is removed but does so at the cost of some hooks/validators being applied to some kubevirt data types. The `VirtualMachine` CRD is a great example and one that affects our ability to create. So what we're going to focus on is the few items that we need to add. 
+Harvester is awesome in that much of the complexity of Kubevirt is removed but does so at the cost of some hooks/validators being applied to some kubevirt data types. The `VirtualMachine` CRD is a great example and one that affects our ability to create. So what we're going to focus on is the few items that we need to add. Click the `...` menu to the right of the VM and select `Edit YAML`
 
-I need to set `dedicatedCpuPlacement: true` as a new entry for the `domain.cpu` configuration in my VM. I also need to set the `resources.requests.memory` field to `4Gi`. A snippet of what this looks like:
+We need to set `dedicatedCpuPlacement: true` as a new entry for the `domain.cpu` configuration in my VM. We also need to set the `resources.requests.memory` field to `4Gi`. All references to limts and requests for resources should have the `cpu` lines removed entirely. A snippet of what this looks like is below:
 ```yaml
 domain:
   cpu:
@@ -168,6 +168,12 @@ You can verify that CPUs have been carved off by looking at the kubelet cpu-mana
 ```console
 workshop:/home/rancher # cat /var/lib/kubelet/cpu_manager_state 
 {"policyName":"static","defaultCpuSet":"0-1,4-19","entries":{"5e2cd290-38d7-4749-9218-dfe7132d86df":{"compute":"2-3"}},"checksum":2779859136}
+```
+
+You can also view the `Guaranteed` qosClass of the VM by inspecting the yaml of the running instance.
+```console
+$ kubectl get vmi cputest -o yaml | yq .status.qosClass
+Guaranteed
 ```
 
 #### Notes about Automation
