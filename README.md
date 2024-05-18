@@ -257,3 +257,7 @@ Allocated resources:
 
 
 ## Real-Time workloads with NUMA on Harvester
+
+While theoretically possible with the above settings, the RT Linux kernel extensions must be addeded in order to support real time processes. At this point in time, that is not possible. However, custom builds of Harvester are certainly possible and are already being issued, including the FIPS 140-2 build which requires the FIPS extensions in SLE Micro.
+
+If there is a need for RT execution, that can be added as a feature in the future.
